@@ -1,0 +1,23 @@
+﻿<UserControl x:Class="DesktopChat.RegisterControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:DesktopChat"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid Background="White">
+        <Button x:Name="RegisterBtn" Content="Đăng Ký" HorizontalAlignment="Center" Margin="0,350,0,0" VerticalAlignment="Top" Width="118" Height="32" FontSize="18" BorderBrush="#FF2BD936" Foreground="#FF814F4F" FontFamily="Century Gothic" FontWeight="Bold" Background="#FF1FD6C8" Click="RegisterBtn_Click"/>
+        <TextBox x:Name="PhoneBox" HorizontalAlignment="Center" Margin="0,143,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="350" FontFamily="Century Gothic" FontSize="18"/>
+        <PasswordBox x:Name="PassBox" HorizontalAlignment="Center" Margin="0,246,0,0" VerticalAlignment="Top" Width="350" RenderTransformOrigin="-0.192,1.726" FontFamily="Century Gothic" FontSize="18"/>
+        <Label Content="Multi Chat" HorizontalAlignment="Center" Margin="0,46,0,0" VerticalAlignment="Top" FontFamily="Century Gothic" FontSize="36" FontWeight="Bold"/>
+        <Label Content="Số điện thoại" HorizontalAlignment="Center" Margin="0,118,0,0" VerticalAlignment="Top" FontFamily="Century Gothic" FontStyle="Italic" FontWeight="Bold" Width="350"/>
+        <Label Content="Mật khẩu" HorizontalAlignment="Center" Margin="0,221,0,0" VerticalAlignment="Top" FontFamily="Century Gothic" FontStyle="Italic" FontWeight="Bold" Width="350" RenderTransformOrigin="0.509,-0.405"/>
+        <TextBox x:Name="NameBox" HorizontalAlignment="Center" Margin="0,192,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="350" FontFamily="Century Gothic" FontSize="18"/>
+        <PasswordBox x:Name="ConfirmPassBox" HorizontalAlignment="Center" Margin="0,295,0,0" VerticalAlignment="Top" Width="350" RenderTransformOrigin="-0.192,1.726" FontFamily="Century Gothic" FontSize="18"/>
+        <Label Content="Họ Tên - Chức Danh" HorizontalAlignment="Center" VerticalAlignment="Top" FontFamily="Century Gothic" FontStyle="Italic" FontWeight="Bold" Width="350" Margin="0,166,0,0"/>
+        <Label Content="Xác nhận mật khẩu" HorizontalAlignment="Center" Margin="0,270,0,0" VerticalAlignment="Top" FontFamily="Century Gothic" FontStyle="Italic" FontWeight="Bold" Width="350"/>
+        <TextBlock x:Name="LoginLink" HorizontalAlignment="Center" Margin="0,324,0,0" TextWrapping="Wrap" Text="Đăng nhập" VerticalAlignment="Top" FontFamily="Century Gothic" RenderTransformOrigin="0.471,1.74" Foreground="#FF4031E3" TextDecorations="Underline" Width="350" MouseLeftButtonUp="LoginLink_MouseLeftButtonUp" />
+
+    </Grid>
+</UserControl>

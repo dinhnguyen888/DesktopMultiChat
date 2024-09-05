@@ -1,0 +1,90 @@
+﻿<UserControl x:Class="DesktopChat.ChatControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:DesktopChat"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid Background="#FFF6F6F3">
+        <DockPanel>
+            <StackPanel Width="157" Background="#EEE" DockPanel.Dock="Left">
+                <Button x:Name="OnlineBtn" Content="Đoạn chat gần đây" Height="40" FontSize="16" Margin="5" />
+                <Button x:Name="ContactBtn" Content="Liên hệ" Height="40" FontSize="16" Margin="5" Click="ContactBtn_Click"/>
+                <Button x:Name="RoomBtn" Content="Nhóm" Height="40" FontSize="16" Margin="5" Click="RoomBtn_Click" />
+                <ListBox x:Name="DisplayContact" Background="#FFF" Margin="5" MinHeight="300" Height="155" 
+         SelectionChanged="DisplayContact_SelectionChanged">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <!-- Dấu chấm thể hiện trạng thái online/offline -->
+                                <Ellipse Width="10" Height="10" VerticalAlignment="Center" Margin="0,0,5,0">
+                                    <Ellipse.Style>
+                                        <Style TargetType="Ellipse">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsOnline}" Value="True">
+                                                    <Setter Property="Fill" Value="Green"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding IsOnline}" Value="False">
+                                                    <Setter Property="Fill" Value="Red"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Ellipse.Style>
+                                </Ellipse>
+                                <!-- Hiển thị tên liên hệ -->
+                                <TextBlock Text="{Binding ContactName}" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </StackPanel>
+
+            <!-- Phần giao diện chat -->
+            <Grid>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10">
+                    <Label Content="Tên:" FontSize="14" FontFamily="Century Gothic" />
+                    <Label x:Name="CurrentUserName" Content="Username" FontSize="14" FontFamily="Century Gothic" FontWeight="Bold" />
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="10">
+                    <Label Content="Đang nhắn tin với:" FontSize="14" FontFamily="Century Gothic" />
+                    <Label x:Name="CurrentContactName" Content="None" FontSize="14" FontFamily="Century Gothic" FontWeight="Bold" Background="#FF16D2CC">
+                        <Label.Foreground>
+                            <SolidColorBrush Color="#FF543181"/>
+                        </Label.Foreground>
+                    </Label>
+                </StackPanel>
+
+                <!-- Thanh Progress đặt ở phía trên chat -->
+                <ProgressBar x:Name="GlobalProgressBar" Height="20" Width="200" Minimum="0" Maximum="100" Visibility="Collapsed" 
+                             HorizontalAlignment="Left" VerticalAlignment="Top" Margin="20,40,0,0" />
+
+                <ScrollViewer x:Name="ChatScrollViewer" VerticalScrollBarVisibility="Hidden" Margin="20,60,20,100">
+                    <StackPanel x:Name="ChatDisplayArea" Background="#FFF" />
+                </ScrollViewer>
+
+                <Grid VerticalAlignment="Bottom" Margin="20,0,20,20">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <TextBox x:Name="MessageInput" Grid.Column="0" Height="40" TextWrapping="Wrap" 
+                             AcceptsTab="True"  FontFamily="Century Gothic" FontSize="20" 
+                             VerticalAlignment="Center" Margin="0,0,10,0" KeyDown="MessageInput_KeyDown"/>
+
+                    <Button x:Name="SendMsg" Content="Gửi" Grid.Column="1" Width="57" Height="40" 
+                            FontSize="16" Margin="0,0,10,0" />
+
+                    <Button x:Name="SendFile" Content="Gửi File..." Grid.Column="2" Width="83" Height="40" Click="SendFile_Click"
+                            FontSize="16" Margin="0,0,10,0" />
+
+                    <Button x:Name="ViewFile" Content="Xem File" Grid.Column="3" Width="78" Height="40" Click="ViewFile_Click" 
+                            FontSize="16" />
+                </Grid>
+            </Grid>
+        </DockPanel>
+    </Grid>
+</UserControl>
