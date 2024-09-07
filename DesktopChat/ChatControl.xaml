@@ -6,6 +6,7 @@
              xmlns:local="clr-namespace:DesktopChat"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
+    
     <Grid Background="#FFF6F6F3">
         <DockPanel>
             <StackPanel Width="157" Background="#EEE" DockPanel.Dock="Left">

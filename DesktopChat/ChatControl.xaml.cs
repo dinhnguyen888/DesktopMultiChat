@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media;
 using System.Net.Http;
 using Newtonsoft.Json;
 using Microsoft.AspNetCore.SignalR.Client;
@@ -10,14 +9,19 @@ using System.Windows.Input;
 using System.IO;
 using System.Diagnostics;
 using System.Net;
+using ToastNotifications.Messages;
+using ToastNotifications;
+using ToastNotifications.Lifetime;
+using ToastNotifications.Position;
+/* * */
 
 namespace DesktopChat
 {
     public partial class ChatControl : UserControl
     {
-        public static string GlobalClickName { get; set; }
-        public static string GlobalClickPhoneNumber { get; set; }
-        public static string GlobalClickConversation { get; set; }
+        private string GlobalClickPhoneNumber;
+        private string GlobalClickName;
+        public string GlobalClickConversation;
         private HubConnection _hubConnection;
         private HubConnection _messageHubConnection;
 
@@ -26,11 +30,29 @@ namespace DesktopChat
             InitializeComponent();
             ContactBtn.Click += ContactBtn_Click;
             SendMsg.Click += SendMsg_Click;
-            RoomBtn.Click += RoomBtn_Click;  // Thêm sự kiện RoomBtn_Click
+            RoomBtn.Click += RoomBtn_Click;
             CurrentUserName.Content = ApplicationState.CurrentUserName;
             InitializeSignalRConnection();
             InitializeMessageHubConnection();
+            GlobalClickName = ApplicationState.GlobalClickName;
+            GlobalClickPhoneNumber = ApplicationState.GlobalClickPhoneNumber;
+            GlobalClickConversation = ApplicationState.GlobalClickConversation;
+
         }
+        Notifier notifier = new Notifier(cfg =>
+        {
+            cfg.PositionProvider = new WindowPositionProvider(
+                parentWindow: Application.Current.MainWindow,
+                corner: Corner.TopRight,
+                offsetX: 10,
+                offsetY: 10);
+
+            cfg.LifetimeSupervisor = new TimeAndCountBasedLifetimeSupervisor(
+                notificationLifetime: TimeSpan.FromSeconds(3),
+                maximumNotificationCount: MaximumNotificationCount.FromCount(5));
+
+            cfg.Dispatcher = Application.Current.Dispatcher;
+        });
 
         private async void InitializeSignalRConnection()
         {
@@ -38,7 +60,6 @@ namespace DesktopChat
                 .WithUrl("https://localhost:7066/statushub")
                 .Build();
 
-            // Lắng nghe sự kiện người dùng đăng nhập
             _hubConnection.On<string>("UserConnected", (phoneNumber) =>
             {
                 Dispatcher.Invoke(() =>
@@ -52,7 +73,6 @@ namespace DesktopChat
                 });
             });
 
-            // Lắng nghe sự kiện người dùng đăng xuất
             _hubConnection.On<string>("UserDisconnected", (phoneNumber) =>
             {
                 Dispatcher.Invoke(() =>
@@ -63,6 +83,13 @@ namespace DesktopChat
                         contact.IsOnline = false;
                         DisplayContact.Items.Refresh();
                     }
+                });
+            });
+            _hubConnection.On<string>("ReceiveNotification", (notification) =>
+            {
+                Dispatcher.Invoke(() =>
+                {
+                    notifier.ShowInformation(notification);
                 });
             });
 
@@ -82,7 +109,6 @@ namespace DesktopChat
 
             _messageHubConnection.On<string, string, DateTime>("ReceiveMessage", (fromNumber, messageText, sentDateTime) =>
             {
-
                 Dispatcher.Invoke(() =>
                 {
                     var messageBlock = new TextBlock
@@ -92,7 +118,6 @@ namespace DesktopChat
                         Margin = new Thickness(2)
                     };
                     ChatDisplayArea.Children.Add(messageBlock);
-
                     ChatScrollViewer.ScrollToBottom();
                 });
             });
@@ -113,9 +138,7 @@ namespace DesktopChat
         {
             try
             {
-                // Lấy số điện thoại hiện tại từ ApplicationState
                 string currentUserPhone = ApplicationState.CurrentUserPhone;
-
                 if (string.IsNullOrEmpty(currentUserPhone))
                 {
                     MessageBox.Show("Số điện thoại không được tìm thấy.");
@@ -124,16 +147,9 @@ namespace DesktopChat
 
                 using (HttpClient client = new HttpClient())
                 {
-                    // Gửi yêu cầu GET tới API
                     var response = await client.GetStringAsync($"https://localhost:7066/api/Contacts/get-all-room/{currentUserPhone}");
-
-                    // Deserialize kết quả JSON thành danh sách các phòng
                     var rooms = JsonConvert.DeserializeObject<List<Contact>>(response);
-
-                    // Xóa nội dung cũ của DisplayContact trước khi hiển thị kết quả mới
                     DisplayContact.ItemsSource = null;
-
-                    // Cập nhật DisplayContact với danh sách phòng
                     DisplayContact.ItemsSource = rooms;
                 }
             }
@@ -157,25 +173,13 @@ namespace DesktopChat
 
             try
             {
-                // Định dạng lại messageText để bao gồm cả tên người gửi
                 string formattedMessage = $"{ApplicationState.CurrentUserName} >>> {messageText}";
-
-                // Hiển thị ngay lập tức tin nhắn đã gửi lên giao diện
-                Dispatcher.Invoke(() =>
-                {
-                    //var messageBlock = new TextBlock
-                    //{
-                    //    Text = $"{DateTime.Now.ToShortTimeString()}: {formattedMessage}",
-                    //    FontSize = 14,
-                    //    Margin = new Thickness(3)
-                    //};
-                    //ChatDisplayArea.Children.Add(messageBlock);
-
-                    ChatScrollViewer.ScrollToBottom();
-                });
-
+                Dispatcher.Invoke(() => ChatScrollViewer.ScrollToBottom());
                 await _messageHubConnection.InvokeAsync("SendMessage", fromNumber, formattedMessage, conversationId);
+                await _hubConnection.InvokeAsync("SendNotificationToOnlineUsersInConversation", fromNumber, formattedMessage, conversationId);
+               
                 MessageInput.Clear();
+              
             }
             catch (Exception ex)
             {
@@ -188,26 +192,24 @@ namespace DesktopChat
             return int.Parse(GlobalClickConversation);
         }
 
-       private async void ContactBtn_Click(object sender, RoutedEventArgs e)
-{
-    using (HttpClient client = new HttpClient())
-    {
-        string currentUserPhone = ApplicationState.CurrentUserPhone;
-        var response = await client.GetStringAsync($"https://localhost:7066/api/Contacts/get-all-contacts/{currentUserPhone}");
-        var contacts = JsonConvert.DeserializeObject<List<Contact>>(response);
-
-        var onlineContacts = await _hubConnection.InvokeAsync<string[]>("GetOnlineContacts");
-
-        foreach (var contact in contacts)
+        private async void ContactBtn_Click(object sender, RoutedEventArgs e)
         {
-            contact.IsOnline = onlineContacts.Contains(contact.PhoneNumber);
-        }
+            using (HttpClient client = new HttpClient())
+            {
+                string currentUserPhone = ApplicationState.CurrentUserPhone;
+                var response = await client.GetStringAsync($"https://localhost:7066/api/Contacts/get-all-contacts/{currentUserPhone}");
+                var contacts = JsonConvert.DeserializeObject<List<Contact>>(response);
+                var onlineContacts = await _hubConnection.InvokeAsync<string[]>("GetOnlineContacts");
 
-        // Làm mới danh sách liên hệ
-        DisplayContact.ItemsSource = contacts;
-        DisplayContact.Items.Refresh();
-    }
-}
+                foreach (var contact in contacts)
+                {
+                    contact.IsOnline = onlineContacts.Contains(contact.PhoneNumber);
+                }
+
+                DisplayContact.ItemsSource = contacts;
+                DisplayContact.Items.Refresh();
+            }
+        }
 
         private async void SendFile_Click(object sender, RoutedEventArgs e)
         {
@@ -219,112 +221,71 @@ namespace DesktopChat
                 var filePath = openFileDialog.FileName;
                 var fileName = openFileDialog.SafeFileName;
                 var fromNumber = ApplicationState.CurrentUserPhone;
-                var conversationId = GetConversationId(GlobalClickPhoneNumber);
+                var conversationId = GlobalClickConversation;
+                var senderName = ApplicationState.CurrentUserName;
+                var url = "https://localhost:7066/api/File/SendFile";
 
-                // Hiển thị thanh tiến trình
+                if (string.IsNullOrWhiteSpace(fromNumber) || string.IsNullOrWhiteSpace(conversationId))
+                {
+                    MessageBox.Show("Required fields are missing or invalid. Please check your input.");
+                    return;
+                }
+
                 GlobalProgressBar.Visibility = Visibility.Visible;
                 GlobalProgressBar.Value = 0;
 
+                string formattedMessage = $"{ApplicationState.CurrentUserName} >>> {fileName}";
+
                 try
                 {
-                    using (var client = new HttpClient())
-                    using (var form = new MultipartFormDataContent())
+                    using (var httpClient = new HttpClient())
+                    using (var multipartContent = new MultipartFormDataContent())
                     {
-                        // Chuẩn bị file để gửi
-                        using (var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read))
+                        var fileContent = new StreamContent(File.OpenRead(filePath));
+                        fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("multipart/form-data");
+
+                        
+                        multipartContent.Add(fileContent, "file", fileName);
+                        multipartContent.Add(new StringContent(conversationId), "conversationId");
+                        multipartContent.Add(new StringContent(fromNumber), "fromNumber");
+                        multipartContent.Add(new StringContent(senderName), "senderName");
+
+                        var response = await httpClient.PostAsync(url, multipartContent);
+
+                        if (response.IsSuccessStatusCode)
                         {
-                            var fileContent = new StreamContent(fileStream);
-                            fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/octet-stream");
-
-                            // Add file to form
-                            form.Add(fileContent, "file", fileName);
+                            var responseContent = await response.Content.ReadAsStringAsync();
+                            MessageBox.Show($"File sent successfully. Response from server: {responseContent}");
                         }
-
-                        // Thêm các tham số khác với Content-Type xác định rõ ràng
-                        var fromNumberContent = new StringContent(fromNumber);
-                        fromNumberContent.Headers.ContentType = null; // Xóa bỏ content type để tránh lỗi BadRequest
-                        form.Add(fromNumberContent, "fromNumber");
-
-                        var conversationIdContent = new StringContent(conversationId.ToString());
-                        conversationIdContent.Headers.ContentType = null; // Xóa bỏ content type để tránh lỗi BadRequest
-                        form.Add(conversationIdContent, "conversationId");
-
-                        // Gửi file với HttpClient
-                        var response = await client.PostAsync("https://localhost:7066/api/File/SendFile", form);
-
-                        // Kiểm tra lỗi phản hồi từ server
-                        if (!response.IsSuccessStatusCode)
+                        else
                         {
                             var errorContent = await response.Content.ReadAsStringAsync();
-                            MessageBox.Show($"Lỗi khi gửi file: {response.ReasonPhrase}\n{errorContent}");
-                            return;
+                            MessageBox.Show($"Error: {response.StatusCode}\n{errorContent}");
                         }
-
-                        // Update progress bar - giả lập quá trình gửi file
-                        for (int i = 1; i <= 100; i++)
-                        {
-                            await Task.Delay(30);  // Giả lập quá trình gửi file
-                            GlobalProgressBar.Value = i;
-                        }
-
-                        // Lấy URL của file đã gửi
-                        var responseBody = await response.Content.ReadAsStringAsync();
-                        dynamic jsonResponse = JsonConvert.DeserializeObject(responseBody);
-                        string fileUrl = jsonResponse.fileUrl;
-
-                        // Sau khi gửi file thành công, thêm thông báo
-                        var messageBlock = new TextBlock
-                        {
-                            Text = $"File '{fileName}' sent successfully",
-                            FontSize = 14,
-                            Margin = new Thickness(3)
-                        };
-                        ChatDisplayArea.Children.Add(messageBlock);
                     }
+
+                    await _hubConnection.InvokeAsync("SendNotificationToOnlineUsersInConversation", fromNumber, formattedMessage, Convert.ToInt32(conversationId));
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show($"Lỗi khi gửi file: {ex.Message}");
+                    MessageBox.Show($"An error occurred: {ex.Message}");
                 }
                 finally
                 {
-                    // Ẩn thanh tiến trình sau khi hoàn thành
                     GlobalProgressBar.Visibility = Visibility.Collapsed;
                 }
             }
         }
 
-
-
         private void ViewFile_Click(object sender, RoutedEventArgs e)
         {
-            var fileUrl = ""; // Thay đổi để lấy URL của file đã gửi
-
-            try
+            int conversationId = Convert.ToInt32(GlobalClickConversation);
+            if (conversationId != 0)
             {
-                string userFolder = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-                string savePath = Path.Combine(userFolder, "FileInChat");
-
-                if (!Directory.Exists(savePath))
-                {
-                    Directory.CreateDirectory(savePath);
-                }
-
-                var fileName = Path.GetFileName(fileUrl);
-                var filePath = Path.Combine(savePath, fileName);
-
-                using (var client = new WebClient())
-                {
-                    client.DownloadFile(new Uri(fileUrl), filePath);
-                }
-
-                // Mở file đã lưu
-                Process.Start(new ProcessStartInfo(filePath) { UseShellExecute = true });
+                var listFileWindow = new ListFile(GlobalClickConversation);
+                listFileWindow.Show();
             }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Lỗi khi mở file: {ex.Message}");
-            }
+            else { MessageBox.Show("vui lòng chọn một cuộc trò chuyện"); }
         }
 
 
@@ -333,24 +294,17 @@ namespace DesktopChat
             var selectedContact = DisplayContact.SelectedItem as Contact;
             if (selectedContact != null && _hubConnection.State == HubConnectionState.Connected)
             {
-                // Reset giao diện tin nhắn cũ
                 ChatDisplayArea.Children.Clear();
-
                 GlobalClickName = selectedContact.ContactName;
                 GlobalClickPhoneNumber = selectedContact.PhoneNumber;
                 GlobalClickConversation = selectedContact.ConversationId.ToString();
                 CurrentContactName.Content = selectedContact.ContactName;
-
                 int conversationId = GetConversationId(selectedContact.PhoneNumber);
-
-                // Join vào cuộc trò chuyện mới
                 await _messageHubConnection.InvokeAsync("JoinConversation", conversationId);
-
-                MessageBox.Show($"Bạn đã chọn liên hệ: {GlobalClickName}\nSố điện thoại: {GlobalClickPhoneNumber} id:{GlobalClickConversation}");
+                //MessageBox.Show($"Bạn đã chọn liên hệ: {GlobalClickName}\nSố điện thoại: {GlobalClickPhoneNumber} id:{GlobalClickConversation}");
             }
         }
     }
-
     public class Contact
     {
         public int ConversationId { get; set; }

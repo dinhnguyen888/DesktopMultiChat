@@ -1,0 +1,34 @@
+﻿<Window
+    ResizeMode="CanMinimize"
+    x:Class="DesktopChat.ListFile"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    Title="Toàn bộ file đã gửi và nhận" Height="350" Width="525">
+
+    <Grid>
+        <ListBox Name="FilesListBox" 
+                 HorizontalAlignment="Left" 
+                 Height="200" 
+                 VerticalAlignment="Top" 
+                 Width="500" 
+                 Margin="10"
+                 MouseDoubleClick="FilesListBox_MouseDoubleClick"
+                 Loaded="FilesListBox_Loaded">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="{Binding FileName}" Margin="5"/>
+                    </StackPanel>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+        <Label Content="Double Click để mở file và tải xuống" 
+               HorizontalAlignment="Left" 
+               Margin="246,227,0,0" 
+               VerticalAlignment="Top" 
+               FontFamily="Century Gothic" 
+               FontSize="14" 
+               FontStyle="Italic" 
+               Foreground="#FF53CCCF" FontWeight="Bold" RenderTransformOrigin="0.325,0.554"/>
+    </Grid>
+</Window>
