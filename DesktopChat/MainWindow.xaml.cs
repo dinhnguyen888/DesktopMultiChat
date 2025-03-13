@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using DesktopChat.ViewModels;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -9,25 +10,17 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
+namespace DesktopChat;
 
-namespace DesktopChat
+/// <summary>
+/// Interaction logic for MainWindow.xaml
+/// </summary>
+public partial class MainWindow 
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
-
-
-    public partial class MainWindow : Window
+    public MainWindow()
     {
-        public MainWindow()
-        {
-            InitializeComponent();
-
-
-            LoginControl loginControl = new LoginControl();
-            MainGrid.Children.Add(loginControl);
-
-        }
+        InitializeComponent();
+        this.DataContext = new MainWindowVM();
     }
 
 }

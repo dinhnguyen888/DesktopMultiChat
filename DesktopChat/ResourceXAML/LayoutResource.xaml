@@ -1,0 +1,77 @@
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+    xmlns:view="clr-namespace:DesktopChat.Views">
+    <ControlTemplate x:Key="SidebarTemplate" TargetType="ContentControl">
+        <Grid>
+            <!--<Grid.ColumnDefinitions>
+            -->
+            <!--  Sidebar  -->
+            <!--
+                <ColumnDefinition Width="Auto"/>
+            -->
+            <!--  Content  -->
+            <!--<ColumnDefinition Width="*"/>-->
+            <!--
+            </Grid.ColumnDefinitions>-->
+            <!--  Sidebar  -->
+            <ui:NavigationView IsBackButtonVisible="Auto">
+
+                <ui:NavigationView.MenuItems>
+                    <ui:NavigationViewItem
+                        Command="{Binding NavigateCommand}"
+                        CommandParameter="{x:Type view:DashboardView}"
+                        Content="Dashboard"
+                        TargetPageType="{x:Type view:DashboardView}">
+                        <ui:NavigationViewItem.Icon>
+                            <ui:SymbolIcon Symbol="Home32" />
+                        </ui:NavigationViewItem.Icon>
+                    </ui:NavigationViewItem>
+                    <ui:NavigationViewItem
+                        Command="{Binding NavigateCommand}"
+                        CommandParameter="{x:Type view:ChatView}"
+                        Content="Chat"
+                        TargetPageType="{x:Type view:ChatView}">
+                        <ui:NavigationViewItem.Icon>
+                            <ui:SymbolIcon Symbol="Chat32" />
+                        </ui:NavigationViewItem.Icon>
+                    </ui:NavigationViewItem>
+                    <ui:NavigationViewItem
+                        Command="{Binding NavigateCommand}"
+                        CommandParameter="{x:Type view:RoomView}"
+                        Content="Task Management"
+                        TargetPageType="{x:Type view:RoomView}">
+                        <ui:NavigationViewItem.Icon>
+                            <ui:SymbolIcon Symbol="TaskListAdd24" />
+                        </ui:NavigationViewItem.Icon>
+                    </ui:NavigationViewItem>
+                    <ui:NavigationViewItem
+                        Command="{Binding NavigateCommand}"
+                        CommandParameter="{x:Type view:VideoCallView}"
+                        Content="Video Call"
+                        TargetPageType="{x:Type view:VideoCallView}">
+                        <ui:NavigationViewItem.Icon>
+                            <ui:SymbolIcon Symbol="Video32" />
+                        </ui:NavigationViewItem.Icon>
+                    </ui:NavigationViewItem>
+                    <ui:NavigationViewItem
+                        Command="{Binding NavigateCommand}"
+                        CommandParameter="{x:Type view:SettingView}"
+                        Content="Setting"
+                        TargetPageType="{x:Type view:SettingView}">
+                        <ui:NavigationViewItem.Icon>
+                            <ui:SymbolIcon Symbol="Settings32" />
+                        </ui:NavigationViewItem.Icon>
+                    </ui:NavigationViewItem>
+                </ui:NavigationView.MenuItems>
+            </ui:NavigationView>
+
+            <!--  Nội dung (truyền từ bên ngoài vào)  -->
+            <!--<ContentPresenter Grid.Column="1"
+                          VerticalAlignment="Stretch"
+                          HorizontalAlignment="Stretch"
+                          Content="{TemplateBinding Content}"/>-->
+        </Grid>
+    </ControlTemplate>
+</ResourceDictionary>

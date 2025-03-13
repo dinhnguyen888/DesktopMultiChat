@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.11.35222.181
+VisualStudioVersion = 17.13.35825.156 d17.13
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DesktopChat", "DesktopChat\DesktopChat.csproj", "{9963F151-D550-4F1E-BE7C-10FD096F570B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DesktopChat", "DesktopChat\DesktopChat.csproj", "{B811B1C3-05C3-431F-9C6E-1D0FE449329F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,15 +11,15 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{9963F151-D550-4F1E-BE7C-10FD096F570B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9963F151-D550-4F1E-BE7C-10FD096F570B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9963F151-D550-4F1E-BE7C-10FD096F570B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9963F151-D550-4F1E-BE7C-10FD096F570B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B811B1C3-05C3-431F-9C6E-1D0FE449329F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B811B1C3-05C3-431F-9C6E-1D0FE449329F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B811B1C3-05C3-431F-9C6E-1D0FE449329F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B811B1C3-05C3-431F-9C6E-1D0FE449329F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {15CCB89C-3DCB-4BFD-8633-7D25693D178D}
+		SolutionGuid = {D2416C7C-53EC-4229-A836-C90DAB5EEF62}
 	EndGlobalSection
 EndGlobal

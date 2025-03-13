@@ -1,12 +1,24 @@
-﻿<Window x:Class="DesktopChat.MainWindow"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:DesktopChat"
-        mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid x:Name="MainGrid">
-        <!-- Nội dung khác của giao diện người dùng -->
+﻿<ui:FluentWindow
+    x:Class="DesktopChat.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:local="clr-namespace:DesktopChat"
+    mc:Ignorable="d"
+    Title="Godoob Chat"
+    Width="1200" Height="800" 
+    WindowStartupLocation="CenterScreen"
+    xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml">
+
+    <Grid>
+        <!-- Title bar -->
+        <ui:TitleBar Title="Godoob Chat" VerticalAlignment="Top" />
+
+        <!-- Nội dung mở rộng full màn hình -->
+        <ContentControl Content="{Binding CurrentView}"
+                        VerticalAlignment="Stretch"
+                        HorizontalAlignment="Stretch" 
+                        Margin="0,32,0,0" />
     </Grid>
-</Window>
+</ui:FluentWindow>
