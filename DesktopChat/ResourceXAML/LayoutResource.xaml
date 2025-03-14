@@ -5,61 +5,41 @@
     xmlns:view="clr-namespace:DesktopChat.Views">
     <ControlTemplate x:Key="SidebarTemplate" TargetType="ContentControl">
         <Grid>
-            <!--<Grid.ColumnDefinitions>
-            -->
-            <!--  Sidebar  -->
-            <!--
-                <ColumnDefinition Width="Auto"/>
-            -->
-            <!--  Content  -->
-            <!--<ColumnDefinition Width="*"/>-->
-            <!--
-            </Grid.ColumnDefinitions>-->
-            <!--  Sidebar  -->
+
             <ui:NavigationView IsBackButtonVisible="Auto">
 
                 <ui:NavigationView.MenuItems>
-                    <ui:NavigationViewItem
-                        Command="{Binding NavigateCommand}"
-                        CommandParameter="{x:Type view:DashboardView}"
-                        Content="Dashboard"
-                        TargetPageType="{x:Type view:DashboardView}">
+                    <ui:NavigationViewItem Content="Dashboard" TargetPageType="{x:Type view:DashboardView}">
                         <ui:NavigationViewItem.Icon>
                             <ui:SymbolIcon Symbol="Home32" />
                         </ui:NavigationViewItem.Icon>
                     </ui:NavigationViewItem>
-                    <ui:NavigationViewItem
-                        Command="{Binding NavigateCommand}"
-                        CommandParameter="{x:Type view:ChatView}"
-                        Content="Chat"
-                        TargetPageType="{x:Type view:ChatView}">
+
+                    <ui:NavigationViewItem Content="Chat" TargetPageType="{x:Type view:ChatView}">
                         <ui:NavigationViewItem.Icon>
                             <ui:SymbolIcon Symbol="Chat32" />
                         </ui:NavigationViewItem.Icon>
                     </ui:NavigationViewItem>
-                    <ui:NavigationViewItem
-                        Command="{Binding NavigateCommand}"
-                        CommandParameter="{x:Type view:RoomView}"
-                        Content="Task Management"
-                        TargetPageType="{x:Type view:RoomView}">
+
+                    <ui:NavigationViewItem Content="Video Call" TargetPageType="{x:Type view:RoomView}">
                         <ui:NavigationViewItem.Icon>
-                            <ui:SymbolIcon Symbol="TaskListAdd24" />
+                            <ui:SymbolIcon Symbol="Call32" />
                         </ui:NavigationViewItem.Icon>
                     </ui:NavigationViewItem>
-                    <ui:NavigationViewItem
-                        Command="{Binding NavigateCommand}"
-                        CommandParameter="{x:Type view:VideoCallView}"
-                        Content="Video Call"
-                        TargetPageType="{x:Type view:VideoCallView}">
+
+                    <ui:NavigationViewItem Content="Task Management" TargetPageType="{x:Type view:RoomView}">
                         <ui:NavigationViewItem.Icon>
-                            <ui:SymbolIcon Symbol="Video32" />
+                            <ui:SymbolIcon Symbol="TaskListLtr24" />
                         </ui:NavigationViewItem.Icon>
                     </ui:NavigationViewItem>
-                    <ui:NavigationViewItem
-                        Command="{Binding NavigateCommand}"
-                        CommandParameter="{x:Type view:SettingView}"
-                        Content="Setting"
-                        TargetPageType="{x:Type view:SettingView}">
+
+                    <ui:NavigationViewItem Content="Notification" TargetPageType="{x:Type view:RoomView}">
+                        <ui:NavigationViewItem.Icon>
+                            <ui:SymbolIcon Symbol="Alert32" />
+                        </ui:NavigationViewItem.Icon>
+                    </ui:NavigationViewItem>
+
+                    <ui:NavigationViewItem Content="Profile Setting" TargetPageType="{x:Type view:SettingView}">
                         <ui:NavigationViewItem.Icon>
                             <ui:SymbolIcon Symbol="Settings32" />
                         </ui:NavigationViewItem.Icon>
@@ -67,11 +47,7 @@
                 </ui:NavigationView.MenuItems>
             </ui:NavigationView>
 
-            <!--  Nội dung (truyền từ bên ngoài vào)  -->
-            <!--<ContentPresenter Grid.Column="1"
-                          VerticalAlignment="Stretch"
-                          HorizontalAlignment="Stretch"
-                          Content="{TemplateBinding Content}"/>-->
+
         </Grid>
     </ControlTemplate>
 </ResourceDictionary>

@@ -21,6 +21,8 @@ namespace DesktopChat.Services
             _hubConnection = _signalRService.HubConnection;
         }
 
+
+        // Login method
         public async Task<Token> LoginAsync(string email, string password)
         {
             var request = new Login
@@ -33,7 +35,7 @@ namespace DesktopChat.Services
 
             if (token != null)
             {
-                // ✅ Lưu token vào GlobalVariableHelper
+                // Save token to global variable
                 GlobalVariableHelper.AccessToken = token.AccessToken;
                 GlobalVariableHelper.RefreshToken = token.RefreshToken;
 
@@ -43,6 +45,7 @@ namespace DesktopChat.Services
             return token;
         }
 
+        // Connect to SignalR
         private async Task ConnectToSignalRAsync()
         {
             string userId = GlobalVariableHelper.GetUserInfoFromToken("id");
@@ -66,6 +69,8 @@ namespace DesktopChat.Services
                 }
             }
         }
+
+
     }
 }
 
