@@ -26,5 +26,12 @@ namespace DesktopChat.Views
             InitializeComponent();
             DataContext = new LoginVM();
         }
+        private void textPassword_PasswordChanged(object sender, RoutedEventArgs e)
+        {
+            if (DataContext is LoginVM viewModel)
+            {
+                viewModel.Password = textPassword.Password;
+            }
+        }
     }
 }
