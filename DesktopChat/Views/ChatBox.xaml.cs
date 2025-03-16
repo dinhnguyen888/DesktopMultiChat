@@ -27,15 +27,26 @@ namespace DesktopChat.Views
             InitializeComponent();
             var viewModel = new ChatVM(new RoomService(), new MessageService());
             DataContext = viewModel;
+            viewModel.ScrollToBottom = () =>
+            {
+                MessagesScrollViewer.ScrollToBottom();
+            };
         }
 
 
-        private void MessagesScrollViewer_ScrollChanged(object sender, ScrollChangedEventArgs e)
+        private void SendMsg_OnClick(object sender, RoutedEventArgs e)
         {
             MessagesScrollViewer.ScrollToBottom();
         }
-
-
+        private void Msg_Input_OnKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Return)
+            {
+                SendMsg_OnClick(SendBtn, new RoutedEventArgs());
+                SendBtn.Command.Execute(null);
+                e.Handled = true;
+            }
+        }
 
 
     }

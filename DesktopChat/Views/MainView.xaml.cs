@@ -26,5 +26,13 @@ namespace DesktopChat.Views
             InitializeComponent();
             DataContext = new MainVM();
         }
+       
+
+        private void RootNavigation_Loaded(object sender, RoutedEventArgs e)
+        {
+            RootNavigation.Navigate(typeof(DashboardView));
+        }
     }
+
+
 }

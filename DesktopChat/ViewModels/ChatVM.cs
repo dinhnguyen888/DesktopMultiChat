@@ -4,7 +4,6 @@ using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using DesktopChat.Commands;
@@ -16,11 +15,14 @@ namespace DesktopChat.ViewModels
 {
     public class ChatVM : BaseVM
     {
+        // Fields
         private readonly MessageService _messageService;
         private readonly IRoomService _roomService;
 
+        // Properties
         public ObservableCollection<RoomGet> Rooms { get; } = new();
         public ObservableCollection<MessageGet> Messages { get; } = new();
+        public Action ScrollToBottom { get; set; }
 
         private RoomGet _selectedRoom;
         public RoomGet SelectedRoom
@@ -32,7 +34,6 @@ namespace DesktopChat.ViewModels
                 {
                     _selectedRoom = value;
                     OnPropertyChanged(nameof(SelectedRoom));
-
                     LoadRoomChat(value?.RoomId);
                 }
             }
@@ -49,33 +50,37 @@ namespace DesktopChat.ViewModels
             }
         }
 
+        // Commands
         public ICommand SendMessageCommand { get; }
         public ICommand DeleteMessageCommand { get; }
 
-        public ScrollViewer MessagesScrollViewer { get; set; }
-
+        // Constructor
         public ChatVM(IRoomService roomService, MessageService messageService)
         {
             _roomService = roomService;
             _messageService = messageService;
 
-            LoadRoomsAsync();
+            SendMessageCommand = new RelayCommand(
+                async () => await SendMessageAsync(),
+                () => !string.IsNullOrWhiteSpace(NewMessage) && SelectedRoom != null);
+
+            DeleteMessageCommand = new RelayCommand<MessageGet>(
+                async (msg) => await DeleteMessageAsync(msg));
 
             _messageService.OnMessageReceived += MessageReceived;
             _messageService.OnMessageDeleted += MessageDeleted;
 
-            SendMessageCommand = new RelayCommand(async () => await SendMessageAsync(),
-                () => !string.IsNullOrWhiteSpace(NewMessage) && SelectedRoom != null);
-
-            DeleteMessageCommand = new RelayCommand<MessageGet>(async (msg) => await DeleteMessageAsync(msg));
+            LoadRoomsAsync();
         }
 
+        // Load Data
         private async void LoadRoomsAsync()
         {
             var userId = Guid.Parse(GlobalVariableHelper.GetUserInfoFromToken("id"));
             var rooms = await _roomService.GetRoomByUserIdAsync(userId);
             Rooms.Clear();
             foreach (var room in rooms) Rooms.Add(room);
+
             if (SelectedRoom == null && Rooms.Any())
             {
                 SelectedRoom = Rooms.First();
@@ -91,11 +96,10 @@ namespace DesktopChat.ViewModels
             foreach (var message in messages) Messages.Add(message);
 
             await _messageService.JoinRoomAsync(roomId.Value);
-
-            ScrollToBottom();
+            ScrollToBottom?.Invoke();
         }
 
-
+        // Handle Messages
         private async Task SendMessageAsync()
         {
             if (SelectedRoom == null || string.IsNullOrWhiteSpace(NewMessage)) return;
@@ -109,7 +113,6 @@ namespace DesktopChat.ViewModels
 
             Messages.Add(newMessage);
             NewMessage = string.Empty;
-            ScrollToBottom();
 
         }
 
@@ -118,7 +121,6 @@ namespace DesktopChat.ViewModels
             if (message.RoomId == SelectedRoom?.RoomId)
             {
                 Messages.Add(message);
-             
             }
         }
 
@@ -134,14 +136,5 @@ namespace DesktopChat.ViewModels
             await _messageService.DeleteMessageAsync(message.MessageId);
             MessageDeleted(message.MessageId);
         }
-
-        private void ScrollToBottom()
-        {
-            Application.Current.Dispatcher.InvokeAsync(() =>
-            {
-                MessagesScrollViewer?.ScrollToEnd();
-            }, System.Windows.Threading.DispatcherPriority.ContextIdle);
-        }
-
     }
 }
