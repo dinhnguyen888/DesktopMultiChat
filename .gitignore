@@ -5,3 +5,5 @@
 /.vs
 /DesktopChat/bin/Debug/net8.0-windows
 /DesktopChat/obj
+/DesktopChat/bin/Release/net8.0-windows/win-x64
+/DesktopChat/publish

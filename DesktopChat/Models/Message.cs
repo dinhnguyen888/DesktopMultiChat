@@ -6,6 +6,14 @@ using System.Threading.Tasks;
 
 namespace DesktopChat.Models
 {
+    public class MessageGet
+    {
+        public int MessageId { get; set; }
+        public string SenderName { get; set; }
+        public string MessageText { get; set; }
+        public Guid RoomId { get; set; }
+    }
+
     public class MessagePost
     {
         public string SenderName { get; set; }

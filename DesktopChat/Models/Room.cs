@@ -13,4 +13,8 @@ namespace DesktopChat.Models
         public int MemberCount { get; set; }
         public int OnlineUserCount { get; set; }
     }
+
+    class RoomPost
+    {
+    }
 }
