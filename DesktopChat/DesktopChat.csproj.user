@@ -2,19 +2,22 @@
 <Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup />
   <ItemGroup>
-    <Compile Update="Views\ChatBox.xaml.cs">
+    <Compile Update="Views\UserControls\ChatBox.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="Views\DashboardView.xaml.cs">
+    <Compile Update="Views\Pages\DashboardPage.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="Views\RoomView.xaml.cs">
+    <Compile Update="Views\Pages\DMsPage.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="Views\SettingView.xaml.cs">
+    <Compile Update="Views\Pages\RMsPage.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="Views\VideoCallView.xaml.cs">
+    <Compile Update="Views\Pages\SettingPage.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Views\Windows\LoginWindow.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>

@@ -1,102 +1,126 @@
-﻿using System.Linq;
+﻿using System;
 using System.Collections.ObjectModel;
-using LiveCharts;
-using LiveCharts.Wpf;
-using System.Windows.Media;
-using DesktopChat.ViewModels;
+using System.Threading.Tasks;
+using System.Windows.Input;
+using DesktopChat.Models;
+using DesktopChat.Services;
+using DesktopChat.Commands;
+using System.Diagnostics;
+using Wpf.Ui.Input;
+using System.Windows;
 
-public class DashboardVM : BaseVM
+namespace DesktopChat.ViewModels
 {
-    public ObservableCollection<Account> Accounts { get; set; }
-    public ObservableCollection<Room> Rooms { get; set; }
-
-    public SeriesCollection OverallProgressSeries { get; set; }
-    public SeriesCollection IndividualProgressSeries { get; set; }
-
-    private string[] _employeeNames;
-    public string[] EmployeeNames
+    public class DashboardVM : BaseVM
     {
-        get => _employeeNames;
-        set
+        // 🏷️ Services
+        private readonly AccountService _accountService;
+        private readonly RoomService _roomService;
+
+        // 🏷️ Collections
+        public ObservableCollection<Account> Accounts { get; set; }
+        public ObservableCollection<RoomGet> Rooms { get; set; }
+        public ObservableCollection<AccountViewStatus> OnlineAccountViews { get; set; }
+
+        // 🏷️ Đếm số lượng người dùng online
+        private int _onlineAccountCount;
+        public int OnlineAccountCount
         {
-            _employeeNames = value;
-            OnPropertyChanged();
+            get => _onlineAccountCount;
+            set
+            {
+                _onlineAccountCount = value;
+                OnPropertyChanged(); // Thông báo cho View cập nhật
+            }
+        }
+
+        // 🏷️ Lệnh để làm mới dữ liệu
+        public ICommand RefreshCommand { get; }
+        public ICommand MessageAccountCommand { get; }
+
+        // 🏷️ Constructor
+        public DashboardVM()
+        {
+            _accountService = new AccountService();
+            _roomService = new RoomService();
+
+            Accounts = new ObservableCollection<Account>();
+            Rooms = new ObservableCollection<RoomGet>();
+            OnlineAccountViews = new ObservableCollection<AccountViewStatus>();
+
+            RefreshCommand = new RelayCommand(async _ => await LoadData());
+            MessageAccountCommand = new RelayCommand<Guid>(SendMessage);
+
+            LoadData();
+           
+        }
+
+        // 📌 Tải toàn bộ dữ liệu từ service
+        private async Task LoadData()
+        {
+            await Task.WhenAll(LoadOnlineUsers(), LoadRooms());
+        }
+
+        // 📌 Lấy danh sách người dùng online
+        private async Task LoadOnlineUsers()
+        {
+            try
+            {
+                var onlineAccounts = await _accountService.ViewOnlineAccountAsync();
+                Console.WriteLine(onlineAccounts);
+                if (onlineAccounts != null)
+                {
+                    OnlineAccountViews.Clear();
+
+                    foreach (var account in onlineAccounts)
+                    {
+                        if (account.IsOnline == true) 
+                        {
+                            OnlineAccountViews.Add(account);
+                        }
+                    }
+
+                   
+                    OnlineAccountCount = OnlineAccountViews.Count;
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"❌ Error loading online users: {ex.Message}");
+            }
+        }
+
+        // 📌 Lấy danh sách phòng chat
+        private async Task LoadRooms()
+        {
+            try
+            {
+                var rooms = await _roomService.GetAllRoomAsync();
+
+                if (rooms != null)
+                {
+                    Rooms.Clear();
+
+                    foreach (var room in rooms)
+                    {
+                        Rooms.Add(room);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"❌ Error loading rooms: {ex.Message}");
+            }
+        }
+
+        
+
+        // 📌 Xử lý gửi tin nhắn
+        private void SendMessage(Guid accountId)
+        {
+            MessageBox.Show($"Send message to account: {accountId}");
+
+
         }
     }
-
-    public Func<double, string> YFormatter { get; set; }
-
-    public DashboardVM()
-    {
-        Accounts = new ObservableCollection<Account>
-        {
-            new Account { Username = "John Doe", StatusColor = Brushes.Green },
-            new Account { Username = "Jane Smith", StatusColor = Brushes.Red }
-        };
-
-        Rooms = new ObservableCollection<Room>
-        {
-            new Room { RoomName = "Room A" },
-            new Room { RoomName = "Room B" }
-        };
-
-        // Cập nhật EmployeeNames khi Accounts thay đổi
-        UpdateEmployeeNames();
-
-        OverallProgressSeries = new SeriesCollection
-        {
-            new PieSeries { Title = "Hoàn thành", Values = new ChartValues<double> { 70 }, Fill = Brushes.Green },
-            new PieSeries { Title = "Chưa hoàn thành", Values = new ChartValues<double> { 30 }, Fill = Brushes.Red }
-        };
-
-        IndividualProgressSeries = new SeriesCollection
-    {
-        new RowSeries
-        {
-            Title = "John Doe",
-            Values = new ChartValues<double> { 80 },
-            Fill = Brushes.Green,
-        },
-        new RowSeries
-        {
-            Title = "John Die",
-            Values = new ChartValues<double> { 80 },
-            Fill = Brushes.Yellow,
-        },
-        new RowSeries
-        {
-            Title = "John Fuck",
-            Values = new ChartValues<double> { 80 },
-            Fill = Brushes.Gray,
-        },
-        new RowSeries
-        {
-            Title = "Jane Smith",
-            Values = new ChartValues<double> { 60 },
-            Fill = Brushes.Blue,
-        }
-    };
-
-        // Cập nhật EmployeeNames khi SeriesCollection thay đổi
-        IndividualProgressSeries.CollectionChanged += (s, e) => UpdateEmployeeNames();
-        UpdateEmployeeNames();
-
-        YFormatter = value => $"{value}%";
-    }
-
-    private void UpdateEmployeeNames()
-    {
-        EmployeeNames = Accounts.Select(a => a.Username).ToArray();
-    }
-}
-
-public class Account
-{
-    public string Username { get; set; }
-    public Brush StatusColor { get; set; }
-}
-
-public class Room
-{
-    public string RoomName { get; set; }
 }

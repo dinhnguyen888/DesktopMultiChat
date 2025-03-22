@@ -9,13 +9,13 @@ using DesktopChat.Interfaces;
 
 namespace DesktopChat.Services
 {
-    public class MessageService : BaseService
+    public class RoomMessageService : BaseService
     {
         private const string Endpoint = "message";
         private readonly HubConnection _hubConnection;
 
         
-        public MessageService()
+        public RoomMessageService()
         {
             ISignalRService _signalRService = new SignalRService();
             string baseUrl = _signalRService.getSignalRUrl();
@@ -30,7 +30,7 @@ namespace DesktopChat.Services
         // Method to register event handlers for SignalR
         private void RegisterHandlers()
         {
-            _hubConnection.On<MessageGet>("ReceiveMessage", (message) =>
+            _hubConnection.On<RoomMessageGet>("ReceiveMessage", (message) =>
             {
                 Application.Current.Dispatcher.Invoke(() =>
                 {
@@ -48,21 +48,21 @@ namespace DesktopChat.Services
         }
 
         // Event for receiving a message
-        public event Action<MessageGet>? OnMessageReceived;
+        public event Action<RoomMessageGet>? OnMessageReceived;
 
         // Event for deleting a message
         public event Action<int>? OnMessageDeleted;
 
         // Get all messages in a room
-        public async Task<List<MessageGet>> GetAllMessagesAsync(Guid roomId)
+        public async Task<List<RoomMessageGet>> GetAllMessagesAsync(Guid roomId)
         {
-            return await GetAsync<List<MessageGet>>($"{Endpoint}/{roomId}");
+            return await GetAsync<List<RoomMessageGet>>($"{Endpoint}/{roomId}");
         }
 
         // Create a new message
-        public async Task<MessageGet> CreateMessageAsync(MessagePost dto)
+        public async Task<RoomMessageGet> CreateMessageAsync(RoomMessagePost dto)
         {
-            return await PostAsync<MessageGet>(Endpoint, dto);
+            return await PostAsync<RoomMessageGet>(Endpoint, dto);
         }
 
         // Delete a message

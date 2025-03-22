@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using System;
+using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
@@ -121,5 +122,43 @@ namespace DesktopChat.Services
                 RemoveAuthenticationHeader();
             }
         }
+
+        protected async Task<T> UploadFileAsync<T>(string endpoint, Stream fileStream, string fileName, Dictionary<string, string> parameters, string accessToken = null)
+        {
+            AddAuthenticationHeader(accessToken);
+
+            try
+            {
+                using (var content = new MultipartFormDataContent())
+                {
+                    // Thêm file stream vào request
+                    var fileContent = new StreamContent(fileStream);
+                    fileContent.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
+                    content.Add(fileContent, "File", fileName);
+
+                    // Thêm các tham số khác (nếu có)
+                    if (parameters != null)
+                    {
+                        foreach (var param in parameters)
+                        {
+                            content.Add(new StringContent(param.Value), param.Key);
+                        }
+                    }
+
+                    var response = await _httpClient.PostAsync($"{BaseUrl}/{endpoint}", content);
+                    response.EnsureSuccessStatusCode();
+
+                    var result = await response.Content.ReadAsStringAsync();
+
+                    return JsonConvert.DeserializeObject<T>(result) ??
+                           throw new InvalidOperationException($"Failed to deserialize response from {endpoint}");
+                }
+            }
+            finally
+            {
+                RemoveAuthenticationHeader();
+            }
+        }
+
     }
 }

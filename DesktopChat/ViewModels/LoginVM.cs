@@ -77,6 +77,7 @@ namespace DesktopChat.ViewModels
 
                 MessageBox.Show($"Login success!\nEmail: {userEmail}");
                 _onLoginSuccess?.Invoke();
+                CloseDialog(true);
             }
             catch (Exception ex)
             {
@@ -93,6 +94,19 @@ namespace DesktopChat.ViewModels
             finally
             {
                 IsHidden = "Hidden";
+            }
+
+
+        }
+        private void CloseDialog(bool result)
+        {
+            foreach (var window in System.Windows.Application.Current.Windows)
+            {
+                if (window is DesktopChat.Views.Windows.LoginWindow loginWindow)
+                {
+                    loginWindow.DialogResult = result; // Đóng dialog với kết quả là true/false
+                    break;
+                }
             }
         }
     }

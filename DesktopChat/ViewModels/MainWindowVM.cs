@@ -1,8 +1,7 @@
 ﻿using DesktopChat.Views;
-using System.Windows.Input;
-using DesktopChat.Commands;
-using DesktopChat.Models;
 using DesktopChat.Services;
+using System.Windows;
+using DesktopChat.Views.Windows;
 
 namespace DesktopChat.ViewModels
 {
@@ -25,19 +24,39 @@ namespace DesktopChat.ViewModels
         {
             _authService = new AuthService();
 
-            // Mặc định hiển thị LoginView
-            var loginVM = new LoginVM(_authService, OnLoginSuccess);
-            CurrentView = new LoginView { DataContext = loginVM };
-
-            
+            ShowLoginDialog();
         }
 
-        private void OnLoginSuccess()
+        private void ShowLoginDialog()
         {
-            // Chuyển từ LoginView sang MainView sau khi đăng nhập thành công
+            var loginVM = new LoginVM(_authService, OnLoginSuccess);
+            var loginWindow = new LoginWindow
+            {
+                DataContext = loginVM
+            };
+
+            // Hide MainWindow before showing LoginWindow
+            Application.Current.MainWindow.Hide();
+
+            // Show LoginWindow as dialog
+            bool? result = loginWindow.ShowDialog();
+
+            if (result == true)
+            {
+                
+                Application.Current.MainWindow.Show();
+                CurrentView = new MainView(); // Switch to MainView after successful login
+            }
+            else
+            {
+                // Close application
+                Application.Current.Shutdown();
+            }
+        }
+          private void OnLoginSuccess()
+        {
+            // Switch to MainView after successful login
             CurrentView = new MainView();
         }
-
-       
     }
 }
