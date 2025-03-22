@@ -14,14 +14,14 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace DesktopChat.Views
+namespace DesktopChat.Views.Pages
 {
     /// <summary>
-    /// Interaction logic for DashboardView.xaml
+    /// Interaction logic for DashboardPage.xaml
     /// </summary>
-    public partial class DashboardView : UserControl
+    public partial class DashboardPage : Page
     {
-        public DashboardView()
+        public DashboardPage()
         {
             InitializeComponent();
             DataContext = new DashboardVM();

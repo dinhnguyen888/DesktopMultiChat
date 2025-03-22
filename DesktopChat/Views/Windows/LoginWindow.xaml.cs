@@ -11,21 +11,21 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace DesktopChat.Views
+namespace DesktopChat.Views.Windows
 {
     /// <summary>
-    /// Interaction logic for LoginView.xaml
+    /// Interaction logic for LoginWindow.xaml
     /// </summary>
-    public partial class LoginView : UserControl
+    public partial class LoginWindow : Window
     {
-        public LoginView()
+        public LoginWindow()
         {
             InitializeComponent();
             DataContext = new LoginVM();
         }
+
         private void textPassword_PasswordChanged(object sender, RoutedEventArgs e)
         {
             if (DataContext is LoginVM viewModel)

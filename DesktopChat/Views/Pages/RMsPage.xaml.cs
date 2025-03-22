@@ -15,18 +15,17 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace DesktopChat.Views
+namespace DesktopChat.Views.Pages
 {
     /// <summary>
-    /// Interaction logic for ChatView.xaml
+    /// Interaction logic for RMsPage.xaml
     /// </summary>
-    public partial class ChatView : UserControl
+    public partial class RMsPage 
     {
-        public ChatView()
+        public RMsPage()
         {
             InitializeComponent();
-            DataContext = new ChatVM(new RoomService(),new MessageService());
-
+            DataContext = new RoomMessagesVM(new RoomService(), new RoomMessageService(), new FileService());
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using DesktopChat.ViewModels;
+using DesktopChat.Views.Pages;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,7 +31,7 @@ namespace DesktopChat.Views
 
         private void RootNavigation_Loaded(object sender, RoutedEventArgs e)
         {
-            RootNavigation.Navigate(typeof(DashboardView));
+            RootNavigation.Navigate(typeof(DashboardPage));
         }
     }
 

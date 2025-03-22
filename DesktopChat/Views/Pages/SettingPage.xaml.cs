@@ -14,14 +14,14 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace DesktopChat.Views
+namespace DesktopChat.Views.Pages
 {
     /// <summary>
-    /// Interaction logic for SettingView.xaml
+    /// Interaction logic for SettingPage.xaml
     /// </summary>
-    public partial class SettingView : UserControl
+    public partial class SettingPage : Page
     {
-        public SettingView()
+        public SettingPage()
         {
             InitializeComponent();
             DataContext = new SettingVM();

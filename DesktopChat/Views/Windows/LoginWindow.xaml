@@ -1,18 +1,24 @@
-﻿<UserControl
-    x:Class="DesktopChat.Views.LoginView"
+﻿<Window
+    x:Class="DesktopChat.Views.Windows.LoginWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="clr-namespace:DesktopChat.Views"
-    xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml">
-    <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-        <!--  Background Image with 80% opacity  -->
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:DesktopChat.Views.Windows"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+    Width="800"
+    Height="450"
+    ResizeMode="CanMinimize"
+    WindowStartupLocation="CenterScreen"
+    mc:Ignorable="d">
+    <Grid>
+        <ui:TitleBar Title="Login window" />
         <Image
             Opacity="0.8"
             Source="/Assets/login-background.jpg"
             Stretch="Fill" />
-
         <!--  Black overlay with 80% opacity  -->
-        <Rectangle Fill="Black" Opacity="0.8" />
+        <Rectangle Fill="Black" Opacity="0.9" />
 
         <!--  Login Form centered on top  -->
         <StackPanel
@@ -42,8 +48,9 @@
                 Margin="0,0,0,20"
                 Appearance="Primary"
                 Command="{Binding LoginCommand}"
-                Content="Login" />
+                Content="Login"
+                Cursor="Hand" />
             <ProgressBar IsIndeterminate="True" Visibility="{Binding IsHidden, UpdateSourceTrigger=PropertyChanged}" />
         </StackPanel>
     </Grid>
-</UserControl>
+</Window>

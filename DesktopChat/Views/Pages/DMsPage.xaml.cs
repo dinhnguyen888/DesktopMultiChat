@@ -1,4 +1,6 @@
-﻿using System;
+﻿using DesktopChat.Services;
+using DesktopChat.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,16 +15,17 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace DesktopChat.Views
+namespace DesktopChat.Views.Pages
 {
     /// <summary>
-    /// Interaction logic for RoomView.xaml
+    /// Interaction logic for DMsPage.xaml
     /// </summary>
-    public partial class RoomView : UserControl
+    public partial class DMsPage 
     {
-        public RoomView()
+        public DMsPage()
         {
             InitializeComponent();
+            DataContext = new DirectMessagesVM(new AccountService(), new RoomMessageService(), new FileService());
         }
     }
 }

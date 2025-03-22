@@ -39,7 +39,7 @@
                         VerticalAlignment="Center"
                         FontWeight="Bold"
                         Foreground="White"
-                        Text="{Binding SelectedRoom.RoomName}" />
+                        Text="{Binding MessageEntity.MessageEntityName}" />
                 </StackPanel>
             </Border>
 
@@ -54,7 +54,7 @@
                 <StackPanel Orientation="Vertical">
                     <ItemsControl ItemsSource="{Binding Messages}">
                         <ItemsControl.ItemTemplate>
-                            <DataTemplate DataType="{x:Type vm:ChatVM}">
+                            <DataTemplate DataType="{x:Type vm:ChatBoxVM}">
                                 <Border
                                     Margin="8"
                                     Padding="10,8"
@@ -81,13 +81,19 @@
                                         </StackPanel>
 
                                         <!--  Message Content  -->
-                                        <TextBlock
+                                        <!--  Message Content  -->
+                                        <ContentControl
                                             Grid.Row="1"
                                             Margin="0,4,0,0"
-                                            FontSize="14"
-                                            Foreground="White"
-                                            Text="{Binding MessageText}"
-                                            TextWrapping="Wrap" />
+                                            Content="{Binding MessageText, Converter={StaticResource TextToHyperlinkTextBlockConverter}}">
+                                            <ContentControl.Resources>
+                                                <Style TargetType="TextBlock">
+                                                    <Setter Property="FontSize" Value="14" />
+                                                    <Setter Property="Foreground" Value="White" />
+                                                    <Setter Property="TextWrapping" Value="Wrap" />
+                                                </Style>
+                                            </ContentControl.Resources>
+                                        </ContentControl>
 
                                         <!--  Delete Button  -->
                                         <ui:Button
@@ -113,13 +119,14 @@
             <!--  Message Input  -->
             <Grid Grid.Row="2" Margin="0,8,0,0">
                 <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
 
                 <!--  Message Input Box  -->
                 <Border
-                    Grid.Column="0"
+                    Grid.Column="1"
                     Margin="0,0,8,0"
                     Background="#404040"
                     CornerRadius="8">
@@ -129,25 +136,39 @@
                         Background="Transparent"
                         BorderThickness="0"
                         FontSize="14"
-                        KeyDown="Msg_Input_OnKeyDown"
                         PlaceholderText="Type your message..."
                         Text="{Binding NewMessage, UpdateSourceTrigger=PropertyChanged}"
-                        TextWrapping="Wrap" />
+                        TextWrapping="Wrap">
+                        <ui:TextBox.InputBindings>
+                            <KeyBinding Key="Return" Command="{Binding SendMessageCommand}" />
+                        </ui:TextBox.InputBindings>
+                    </ui:TextBox>
+
                 </Border>
 
-                <!--  Send Button  -->
+                <!--  Send File Button  -->
+                <ui:HyperlinkButton
+                    Grid.Column="0"
+                    Margin="0,0,8,0"
+                    Command="{Binding UploadFileCommand}"
+                    Content="Upload..."
+                    Icon="{ui:SymbolIcon Link24}" />
+                <!--  Send Message Button  -->
                 <ui:Button
                     Name="SendBtn"
-                    Grid.Column="1"
+                    Grid.Column="2"
                     MinWidth="80"
                     VerticalAlignment="Stretch"
                     Appearance="Primary"
-                    Click="SendMsg_OnClick"
                     Command="{Binding SendMessageCommand}"
                     Content="Send"
                     CornerRadius="8"
                     Icon="{ui:SymbolIcon Send24}" />
+
+
+
             </Grid>
+
         </Grid>
     </Border>
 </UserControl>
